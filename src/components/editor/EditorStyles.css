@@ -1,0 +1,396 @@
+/* Editor styles */
+@layer components {
+  .rich-text-editor {
+    @apply min-h-[200px] focus:outline-none;
+  }
+
+  /* Callout styles */
+  .rich-text-editor .callout {
+    padding: 16px 16px 16px 56px;
+    margin: 1rem 0;
+    border-radius: 8px;
+    position: relative;
+    font-size: 0.95em;
+    border: 1px solid;
+  }
+
+  .rich-text-editor .callout::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    width: 24px;
+    height: 24px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  /* Info callout */
+  .rich-text-editor .callout-info {
+    background-color: #EFF6FF;
+    border-color: #3B82F6;
+    border-left-width: 4px;
+  }
+
+  .rich-text-editor .callout-info::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233B82F6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='12' y1='16' x2='12' y2='12'%3E%3C/line%3E%3Cline x1='12' y1='8' x2='12.01' y2='8'%3E%3C/line%3E%3C/svg%3E");
+  }
+
+  /* Warning callout */
+  .rich-text-editor .callout-warning {
+    background-color: #FEFCE8;
+    border-color: #EAB308;
+    border-left-width: 4px;
+  }
+
+  .rich-text-editor .callout-warning::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23EAB308' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z'%3E%3C/path%3E%3Cline x1='12' y1='9' x2='12' y2='13'%3E%3C/line%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'%3E%3C/line%3E%3C/svg%3E");
+  }
+
+  /* Success callout */
+  .rich-text-editor .callout-success {
+    background-color: #F0FDF4;
+    border-color: #22C55E;
+    border-left-width: 4px;
+  }
+
+  .rich-text-editor .callout-success::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2322C55E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cpath d='m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9'%3E%3C/path%3E%3C/svg%3E");
+  }
+
+  /* Error callout */
+  .rich-text-editor .callout-error {
+    background-color: #FEF2F2;
+    border-color: #EF4444;
+    border-left-width: 4px;
+  }
+
+  .rich-text-editor .callout-error::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23EF4444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='15' y1='9' x2='9' y2='15'%3E%3C/line%3E%3Cline x1='9' y1='9' x2='15' y2='15'%3E%3C/line%3E%3C/svg%3E");
+  }
+
+  /* Hover effects */
+  .rich-text-editor .callout:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Transitions */
+  .rich-text-editor .callout {
+    transition: all 0.2s ease;
+  }
+
+  /* Typography inside callouts */
+  .rich-text-editor .callout p {
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .rich-text-editor .callout p:not(:last-child) {
+    margin-bottom: 0.75rem;
+  }
+
+  /* First paragraph styling */
+  .rich-text-editor .callout p:first-child {
+    font-weight: 500;
+  }
+
+  /* Horizontal rule styles */
+  .rich-text-editor hr {
+    margin: 2.5em 0;
+    padding: 0;
+    border: none;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      #94a3b8,
+      #94a3b8,
+      transparent
+    );
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    position: relative;
+  }
+
+  /* Add subtle decorative elements */
+  .rich-text-editor hr::before,
+  .rich-text-editor hr::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    background: #94a3b8;
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+
+  .rich-text-editor hr::before {
+    left: 20%;
+  }
+
+  .rich-text-editor hr::after {
+    right: 20%;
+  }
+}
+
+/* Table styles */
+.rich-text-editor table {
+  border-collapse: collapse;
+  margin: 0;
+  overflow: hidden;
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Cell wrapper to maintain structure */
+.rich-text-editor table td > div,
+.rich-text-editor table th > div {
+  min-height: 2em;
+  padding: 0.75rem;
+  position: relative;
+}
+
+.rich-text-editor table td,
+.rich-text-editor table th {
+  border: 2px solid #ced4da;
+  box-sizing: border-box;
+  min-width: 100px;
+  position: relative;
+  vertical-align: top;
+}
+
+/* Content container */
+.rich-text-editor table td > div > *,
+.rich-text-editor table th > div > * {
+  margin: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Ensure paragraphs maintain height */
+.rich-text-editor table td p,
+.rich-text-editor table th p {
+  min-height: 1.5em;
+  padding: 0;
+  margin: 0;
+}
+
+.rich-text-editor table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.rich-text-editor table .selectedCell:after {
+  background: rgba(200, 200, 255, 0.4);
+  content: "";
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.rich-text-editor table .column-resize-handle {
+  background-color: #adf;
+  bottom: -2px;
+  position: absolute;
+  right: -2px;
+  pointer-events: none;
+  top: 0;
+  width: 4px;
+  z-index: 3;
+}
+
+.rich-text-editor .tableWrapper {
+  margin: 1rem 0;
+  overflow-x: auto;
+  position: relative;
+}
+
+.rich-text-editor .resize-cursor {
+  cursor: col-resize;
+}
+
+/* Focus styles */
+.rich-text-editor td:focus-within > div,
+.rich-text-editor th:focus-within > div {
+  box-shadow: inset 0 0 0 2px #4299e1;
+  outline: none;
+}
+
+/* Other editor-specific styles can be added here */
+
+/* Code block styles */
+.rich-text-editor .code-block-wrapper {
+  position: relative;
+  margin: 1rem 0;
+}
+
+.rich-text-editor pre {
+  background: #1e1e1e;
+  border-radius: 0.5rem;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 1.5rem 1rem 0.75rem;
+  margin: 1rem 0;
+  position: relative;
+  overflow-x: auto;
+  min-height: calc(1.5em * 5 + 2.25rem); /* 5 lines + padding */
+}
+
+.rich-text-editor pre code {
+  background: none;
+  color: inherit;
+  font-size: 0.875rem;
+  padding: 0;
+  display: block;
+  line-height: 1.5;
+  min-height: calc(1.5em * 5); /* 5 lines */
+}
+
+/* Line numbers */
+.rich-text-editor pre code div[data-node-view-content] {
+  position: relative;
+}
+
+.rich-text-editor pre code div[data-node-view-content-react] {
+  position: relative;
+  counter-reset: line;
+  padding-left: 3.5rem;
+  margin-left: -3.5rem;
+}
+
+/* Add the vertical line */
+.rich-text-editor pre code div[data-node-view-content-react]::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2rem;
+  border-right: 1px solid #374151;
+}
+
+/* Add line numbers */
+.rich-text-editor pre code div[data-node-view-content-react] {
+  line-height: 1.5;
+}
+
+.rich-text-editor pre code div[data-node-view-content-react]::after {
+  content: '1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9\A 10';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2rem;
+  white-space: pre;
+  text-align: right;
+  padding-right: 1rem;
+  color: #4b5563;
+  user-select: none;
+  line-height: 1.5;
+}
+
+/* Code block toolbar */
+.rich-text-editor .code-block-toolbar {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.rich-text-editor .code-block-toolbar select {
+  appearance: none;
+  background: #2d2d2d;
+  border: 1px solid #404040;
+  color: #d4d4d4;
+  font-size: 0.875rem;
+  padding: 0.25rem 2rem 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  outline: none;
+  min-width: 120px;
+}
+
+.rich-text-editor .code-block-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  color: #d4d4d4;
+  border-radius: 0.25rem;
+  background: #2d2d2d;
+  border: 1px solid #404040;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rich-text-editor .code-block-toolbar select:hover,
+.rich-text-editor .code-block-toolbar button:hover {
+  background: #363636;
+  border-color: #525252;
+}
+
+.rich-text-editor .code-block-toolbar select:focus {
+  border-color: #525252;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Syntax highlighting */
+.rich-text-editor .hljs-comment,
+.rich-text-editor .hljs-quote {
+  color: #608b4e;
+}
+
+.rich-text-editor .hljs-variable,
+.rich-text-editor .hljs-template-variable,
+.rich-text-editor .hljs-attribute,
+.rich-text-editor .hljs-tag,
+.rich-text-editor .hljs-name,
+.rich-text-editor .hljs-regexp,
+.rich-text-editor .hljs-link,
+.rich-text-editor .hljs-name,
+.rich-text-editor .hljs-selector-id,
+.rich-text-editor .hljs-selector-class {
+  color: #569cd6;
+}
+
+.rich-text-editor .hljs-number,
+.rich-text-editor .hljs-meta,
+.rich-text-editor .hljs-built_in,
+.rich-text-editor .hljs-builtin-name,
+.rich-text-editor .hljs-literal,
+.rich-text-editor .hljs-type,
+.rich-text-editor .hljs-params {
+  color: #9cdcfe;
+}
+
+.rich-text-editor .hljs-string,
+.rich-text-editor .hljs-symbol,
+.rich-text-editor .hljs-bullet {
+  color: #ce9178;
+}
+
+.rich-text-editor .hljs-title,
+.rich-text-editor .hljs-section {
+  color: #dcdcaa;
+}
+
+.rich-text-editor .hljs-keyword,
+.rich-text-editor .hljs-selector-tag {
+  color: #c586c0;
+}
+
+.rich-text-editor .hljs-emphasis {
+  font-style: italic;
+}
+
+.rich-text-editor .hljs-strong {
+  font-weight: 700;
+} 
