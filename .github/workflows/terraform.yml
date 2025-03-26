@@ -89,14 +89,13 @@ jobs:
           issue-body: "Review and approve to apply Terraform changes to dev."
 
   apply:
-    name: Terraform Apply
-    needs: set-environment
-    env:
-      ACCOUNT_ID: ${{ needs.set-environment.outputs.account-id }}
+    name: Terraform Apply    
     permissions:
       id-token: write
       contents: read
-    needs: [plan, approve]
+    needs: [set-environment, plan, approve]
+    env:
+      ACCOUNT_ID: ${{ needs.set-environment.outputs.account-id }}
     runs-on: ubuntu-latest
     if: needs.plan.outputs.exit_code == '2'
     steps:
