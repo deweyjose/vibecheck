@@ -25,7 +25,9 @@ jobs:
 
     steps:      
       - name: Print
-        run: echo "Using AWS Account: ${{ env.ACCOUNT_ID }}"
+        run: |
+          echo "Using AWS Account: ${{ env.ACCOUNT_ID }}"          
+
       - name: Checkout code
         uses: actions/checkout@v4
         
