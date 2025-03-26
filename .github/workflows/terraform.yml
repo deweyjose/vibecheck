@@ -11,7 +11,8 @@ env:
   AWS_REGION: us-east-1
   TF_IN_AUTOMATION: true
   TF_INPUT: false  
-  
+  ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}  
+
 jobs:
   plan:
     name: Terraform Plan
@@ -25,18 +26,10 @@ jobs:
     steps:      
       - name: Print
         run: |
-          echo "Using AWS Account: ${{ env.ACCOUNT_ID }}"          
+          echo "Using AWS Account: ${{ env.ENVIRONMENT }}"          
 
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set ACCOUNT_ID
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_ENV
-          else
-            echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_ENV
-          fi
         
       - name: Configure AWS credentials from OIDC
         uses: aws-actions/configure-aws-credentials@v4
@@ -91,14 +84,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set ACCOUNT_ID
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_ENV
-          else
-            echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_ENV
-          fi
 
       - name: Configure AWS credentials from OIDC
         uses: aws-actions/configure-aws-credentials@v4
