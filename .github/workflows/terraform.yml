@@ -17,6 +17,9 @@ env:
 jobs:
   plan:
     name: Terraform Plan
+    permissions:
+      id-token: write
+      contents: read
     runs-on: ubuntu-latest
     outputs:
       exit_code: ${{ steps.plan.outputs.exit_code }}
@@ -69,6 +72,9 @@ jobs:
 
   apply:
     name: Terraform Apply
+    permissions:
+      id-token: write
+      contents: read
     needs: [plan, approve]
     runs-on: ubuntu-latest
     if: needs.plan.outputs.exit_code == '2'
