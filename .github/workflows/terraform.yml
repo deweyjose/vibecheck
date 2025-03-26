@@ -48,8 +48,7 @@ jobs:
         working-directory: infrastructure/environments/${{ env.ENVIRONMENT }}
         run: |
           set +e
-          terraform plan -detailed-exitcode -out=tfplan
-          echo "$?"
+          terraform plan -detailed-exitcode -out=tfplan         
           echo "exit_code=$?" >> $GITHUB_OUTPUT
         continue-on-error: true
       - name: Debug plan exit code
