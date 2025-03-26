@@ -70,6 +70,8 @@ jobs:
           approvers: deweyjose
           issue-title: "Terraform Apply Approval Required"
           issue-body: "Review and approve to apply Terraform changes to dev."
+          approval-comment: "approved"
+          denial-comment: "deny"
 
   apply:
     name: Terraform Apply
