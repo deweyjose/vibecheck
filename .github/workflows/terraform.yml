@@ -2,9 +2,8 @@ name: Terraform Plan & Apply
 
 on:
   push:
-    branches:
-      - dev
-      - main
+    branches:    
+      - '**'
   workflow_dispatch:
 
 env:
