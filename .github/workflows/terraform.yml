@@ -60,6 +60,8 @@ jobs:
 
   approve:
     name: Wait for Manual Approval
+    permissions:
+      issues: write
     needs: plan
     runs-on: ubuntu-latest
     if: github.ref != 'refs/heads/main' && needs.plan.outputs.exit_code == '2'
