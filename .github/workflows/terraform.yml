@@ -11,8 +11,7 @@ env:
   AWS_REGION: us-east-1
   TF_IN_AUTOMATION: true
   TF_INPUT: false
-  IS_MAIN_BRANCH: ${{ github.ref == 'refs/heads/main' }}
-  ACCOUNT_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ACCOUNT_ID_PROD || secrets.AWS_ACCOUNT_ID_DEV }}
+  ACCOUNT_ID: ${{ github.ref == 'refs/heads/main' ? secrets.AWS_ACCOUNT_ID_PROD : secrets.AWS_ACCOUNT_ID_DEV }}
 
 jobs:
   plan:
@@ -27,7 +26,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Configure AWS credentials from OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
