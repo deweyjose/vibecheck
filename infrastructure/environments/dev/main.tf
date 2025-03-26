@@ -11,10 +11,14 @@ module "github_oidc_role" {
       {
         "Effect": "Allow",
         "Action": [
-          "iam:GetOpenIDConnectProvider",
-          "iam:GetRole",
+          "iam:GetOpenIDConnectProvider",         
         ],
         "Resource": "arn:aws:iam::${module.github_oidc_role.effective_account_id}:oidc-provider/token.actions.githubusercontent.com"
+      },
+      {
+        Effect = "Allow",
+        Action = "iam:GetRole",
+        Resource = "arn:aws:iam::${module.github_oidc_role.effective_account_id}:role/github-actions-terraform-dev"
       },
       {
         Effect   = "Allow",
