@@ -7,11 +7,11 @@ variable "aws_region" {
 variable "github_org" {
   description = "The GitHub organization name."
   type        = string
-  default     = "vibecheck"
+  default     = "deweyjose"
 }
 
 variable "github_repo" {
   description = "The GitHub repository name for prod."
   type        = string
-  default     = "vibecheck-prod"
+  default     = "vibecheck"
 }
