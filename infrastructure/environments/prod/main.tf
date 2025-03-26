@@ -9,6 +9,24 @@ module "github_oidc_role" {
     Version   = "2012-10-17",
     Statement = [
       {
+        "Effect": "Allow",
+        "Action": [
+          "iam:GetOpenIDConnectProvider",         
+        ],
+        "Resource": "arn:aws:iam::${module.github_oidc_role.effective_account_id}:oidc-provider/token.actions.githubusercontent.com"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "iam:GetRole",
+          "iam:ListRolePolicies",
+          "iam:GetRolePolicy",
+          "iam:ListAttachedRolePolicies",
+        
+        ],
+        Resource = "arn:aws:iam::${module.github_oidc_role.effective_account_id}:role/github-actions-terraform-dev"
+      },
+      {
         Effect   = "Allow",
         Action   = [
           "s3:ListBucket",
