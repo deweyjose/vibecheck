@@ -9,6 +9,13 @@ module "github_oidc_role" {
     Version   = "2012-10-17",
     Statement = [
       {
+        "Effect": "Allow",
+        "Action": [
+          "iam:GetOpenIDConnectProvider"
+        ],
+        "Resource": "arn:aws:iam::${module.github_oidc_role.effective_account_id}:oidc-provider/token.actions.githubusercontent.com"
+      },
+      {
         Effect   = "Allow",
         Action   = [
           "s3:ListBucket",
