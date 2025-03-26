@@ -19,7 +19,8 @@ module "github_oidc_role" {
         Effect = "Allow",
         Action = [
           "iam:GetRole",
-          "iam:ListRolePolicies"
+          "iam:ListRolePolicies",
+          "iam:GetRolePolicy"
         ],
         Resource = "arn:aws:iam::${module.github_oidc_role.effective_account_id}:role/github-actions-terraform-dev"
       },
