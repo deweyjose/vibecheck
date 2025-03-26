@@ -69,9 +69,7 @@ jobs:
           secret: ${{ secrets.GITHUB_TOKEN }}
           approvers: deweyjose
           issue-title: "Terraform Apply Approval Required"
-          issue-body: "Review and approve to apply Terraform changes to dev."
-          approval-comment: "approved"
-          denial-comment: "deny"
+          issue-body: "Review and approve to apply Terraform changes to dev."          
 
   apply:
     name: Terraform Apply
