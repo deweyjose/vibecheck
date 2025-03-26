@@ -11,7 +11,8 @@ module "github_oidc_role" {
       {
         "Effect": "Allow",
         "Action": [
-          "iam:GetOpenIDConnectProvider"
+          "iam:GetOpenIDConnectProvider",
+          "iam:GetRole",
         ],
         "Resource": "arn:aws:iam::${module.github_oidc_role.effective_account_id}:oidc-provider/token.actions.githubusercontent.com"
       },
