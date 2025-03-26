@@ -70,6 +70,7 @@ jobs:
           approvers: deweyjose
           issue-title: "Terraform Apply Approval Required"
           issue-body: "Review and approve to apply Terraform changes to dev."          
+          exclude-workflow-initiator-as-approver: false
 
   apply:
     name: Terraform Apply
