@@ -11,11 +11,26 @@ env:
   AWS_REGION: us-east-1
   TF_IN_AUTOMATION: true
   TF_INPUT: false  
-  ACCOUNT_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_ACCOUNT_ID_PROD || secrets.AWS_ACCOUNT_ID_DEV }}
-
+  
 jobs:
+  set-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      account-id: ${{ steps.set-environment.outputs.account-id }}
+    steps:
+      - name: Set ACCOUNT_ID
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_ENV
+          else
+            echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_ENV
+          fi
+
   plan:
     name: Terraform Plan
+    needs: set-environment
+    env:
+      ACCOUNT_ID: ${{ needs.set-environment.outputs.account-id }}
     permissions:
       id-token: write
       contents: read
@@ -29,12 +44,12 @@ jobs:
           echo "Using AWS Account: ${{ env.ACCOUNT_ID }}"          
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4      
         
       - name: Configure AWS credentials from OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::564107671739:role/github-actions-terraform-dev
+          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/github-actions-terraform-dev
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Set up Terraform
@@ -75,6 +90,9 @@ jobs:
 
   apply:
     name: Terraform Apply
+    needs: set-environment
+    env:
+      ACCOUNT_ID: ${{ needs.set-environment.outputs.account-id }}
     permissions:
       id-token: write
       contents: read
