@@ -50,7 +50,8 @@ jobs:
           echo "exit_code=$?" >> $GITHUB_OUTPUT
         continue-on-error: true
       - name: Debug plan exit code
-        run: echo "Terraform plan exit code: ${{ steps.plan.outputs.exit_code }}"
+        run: |
+          echo "Terraform plan exit code: ${{ steps.plan.outputs.exit_code }}"
       - name: Upload Plan
         if: steps.plan.outputs.exit_code == '2'
         uses: actions/upload-artifact@v4
