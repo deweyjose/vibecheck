@@ -16,14 +16,14 @@ jobs:
   set-environment:
     runs-on: ubuntu-latest
     outputs:
-      account-id: ${{ steps.set-environment.outputs.account-id }}
+      account-id: ${{ steps.account-id.outputs.account_id }}
     steps:
-      - name: Set ACCOUNT_ID
+      - id: account-id
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_ENV
+            echo "account_id=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_ENV
           else
-            echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_ENV
+            echo "account_id=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_ENV
           fi
 
   plan:
