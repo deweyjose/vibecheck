@@ -50,10 +50,7 @@ jobs:
           set +e
           terraform plan -detailed-exitcode -out=tfplan         
           echo "exit_code=$?" >> $GITHUB_OUTPUT
-        continue-on-error: true
-      - name: Debug plan exit code
-        run: |
-          echo "Terraform plan exit code: ${{ steps.plan.outputs.exit_code }}"
+        continue-on-error: true      
       - name: Upload Plan
         if: steps.plan.outputs.exit_code == '2'
         uses: actions/upload-artifact@v4
@@ -70,7 +67,7 @@ jobs:
       - uses: trstringer/manual-approval@v1
         with:
           secret: ${{ secrets.GITHUB_TOKEN }}
-          approvers: your-github-username
+          approvers: deweyjose
           issue-title: "Terraform Apply Approval Required"
           issue-body: "Review and approve to apply Terraform changes to dev."
 
