@@ -16,21 +16,21 @@ jobs:
   set-environment:
     runs-on: ubuntu-latest
     outputs:
-      account-id: ${{ steps.account-id.outputs.account_id }}
+      account_id: ${{ steps.account-id.outputs.account_id }}
     steps:
-      - id: account-id
+      - id: account_id
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "account_id=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_ENV
+            echo "account_id=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_OUTPUT
           else
-            echo "account_id=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_ENV
+            echo "account_id=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_OUTPUT
           fi
 
   plan:
     name: Terraform Plan
     needs: set-environment
     env:
-      ACCOUNT_ID: ${{ needs.set-environment.outputs.account-id }}
+      ACCOUNT_ID: ${{ needs.set-environment.outputs.account_id }}
     permissions:
       id-token: write
       contents: read
