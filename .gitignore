@@ -27,4 +27,3 @@ dist-ssr
 # Terraform
 terraform.tfvars
 .terraform/
-.terraform.lock.hcl

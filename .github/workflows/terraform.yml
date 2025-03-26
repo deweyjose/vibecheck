@@ -51,20 +51,13 @@ jobs:
           terraform plan -detailed-exitcode -out=tfplan         
           echo "exit_code=$?" >> $GITHUB_OUTPUT
         continue-on-error: true
-
+        
       - name: Upload Plan
         if: steps.plan.outputs.exit_code == '2'
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
           path: infrastructure/environments/${{ env.ENVIRONMENT }}/tfplan
-      
-      - name: Upload Lockfile
-        if: steps.plan.outputs.exit_code == '2'
-        uses: actions/upload-artifact@v4
-        with:
-          name: tf-lock
-          path: infrastructure/environments/${{ env.ENVIRONMENT }}/.terraform.lock.hcl
 
   approve:
     name: Wait for Manual Approval
@@ -110,13 +103,6 @@ jobs:
         with:
           name: tfplan
           path: infrastructure/environments/${{ env.ENVIRONMENT }}
-      
-      - name: Download Lockfile
-        uses: actions/download-artifact@v4
-        with:
-          name: tf-lock
-          path: infrastructure/environments/${{ env.ENVIRONMENT }}
-
 
       - name: Terraform Apply (safely)
         working-directory: infrastructure/environments/${{ env.ENVIRONMENT }}
