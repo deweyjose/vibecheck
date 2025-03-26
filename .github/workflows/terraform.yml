@@ -13,22 +13,8 @@ env:
   TF_INPUT: false  
   
 jobs:
-  set-environment:
-    runs-on: ubuntu-latest
-    outputs:
-      account_id: ${{ steps.account-id.outputs.account_id }}
-    steps:
-      - id: account_id
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "account_id=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_OUTPUT
-          else
-            echo "account_id=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_OUTPUT
-          fi
-
   plan:
     name: Terraform Plan
-    needs: set-environment    
     permissions:
       id-token: write
       contents: read
@@ -36,20 +22,24 @@ jobs:
     outputs:
       exit_code: ${{ steps.plan.outputs.exit_code }}
 
-    steps:            
+    steps:      
       - name: Print
-        env:
-          ACCOUNT_ID: ${{ needs.set-environment.outputs.account_id }}
         run: |
           echo "Using AWS Account: ${{ env.ACCOUNT_ID }}"          
 
       - name: Checkout code
-        uses: actions/checkout@v4      
+        uses: actions/checkout@v4
+
+      - name: Set ACCOUNT_ID
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_ENV
+          else
+            echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_ENV
+          fi
         
       - name: Configure AWS credentials from OIDC
         uses: aws-actions/configure-aws-credentials@v4
-        env:
-          ACCOUNT_ID: ${{ needs.set-environment.outputs.account_id }}
         with:
           role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/github-actions-terraform-dev
           aws-region: ${{ env.AWS_REGION }}
@@ -91,18 +81,24 @@ jobs:
           issue-body: "Review and approve to apply Terraform changes to dev."
 
   apply:
-    name: Terraform Apply    
+    name: Terraform Apply
     permissions:
       id-token: write
       contents: read
-    needs: [set-environment, plan, approve]
-    env:
-      ACCOUNT_ID: ${{ needs.set-environment.outputs.account-id }}
+    needs: [plan, approve]
     runs-on: ubuntu-latest
     if: needs.plan.outputs.exit_code == '2'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set ACCOUNT_ID
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_ENV
+          else
+            echo "ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_ENV
+          fi
 
       - name: Configure AWS credentials from OIDC
         uses: aws-actions/configure-aws-credentials@v4
