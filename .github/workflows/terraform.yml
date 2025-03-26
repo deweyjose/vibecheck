@@ -28,9 +28,7 @@ jobs:
 
   plan:
     name: Terraform Plan
-    needs: set-environment
-    env:
-      ACCOUNT_ID: ${{ needs.set-environment.outputs.account_id }}
+    needs: set-environment    
     permissions:
       id-token: write
       contents: read
@@ -39,6 +37,8 @@ jobs:
       exit_code: ${{ steps.plan.outputs.exit_code }}
 
     steps:      
+      - env:
+          ACCOUNT_ID: ${{ needs.set-environment.outputs.account_id }}
       - name: Print
         run: |
           echo "Using AWS Account: ${{ env.ACCOUNT_ID }}"          
