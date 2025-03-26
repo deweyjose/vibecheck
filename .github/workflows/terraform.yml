@@ -11,7 +11,7 @@ env:
   AWS_REGION: us-east-1
   TF_IN_AUTOMATION: true
   TF_INPUT: false  
-  ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}  
+  SECRET_NAME: ${{ github.ref == 'refs/heads/main' && 'AWS_ACCOUNT_ID_PROD' || 'AWS_ACCOUNT_ID_DEV' }}
 
 jobs:
   plan:
@@ -34,7 +34,7 @@ jobs:
       - name: Configure AWS credentials from OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/github-actions-terraform-dev
+          role-to-assume: arn:aws:iam::${{ secrets[env.SECRET_NAME] }}:role/github-actions-terraform-dev
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Set up Terraform
@@ -88,7 +88,7 @@ jobs:
       - name: Configure AWS credentials from OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/github-actions-terraform-dev
+          role-to-assume: arn:aws:iam::${{ secrets[env.SECRET_NAME] }}:role/github-actions-terraform-dev
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Set up Terraform
