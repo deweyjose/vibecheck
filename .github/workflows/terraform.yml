@@ -36,10 +36,10 @@ jobs:
     outputs:
       exit_code: ${{ steps.plan.outputs.exit_code }}
 
-    steps:      
-      - env:
-          ACCOUNT_ID: ${{ needs.set-environment.outputs.account_id }}
+    steps:            
       - name: Print
+        env:
+          ACCOUNT_ID: ${{ needs.set-environment.outputs.account_id }}
         run: |
           echo "Using AWS Account: ${{ env.ACCOUNT_ID }}"          
 
@@ -48,6 +48,8 @@ jobs:
         
       - name: Configure AWS credentials from OIDC
         uses: aws-actions/configure-aws-credentials@v4
+        env:
+          ACCOUNT_ID: ${{ needs.set-environment.outputs.account_id }}
         with:
           role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/github-actions-terraform-dev
           aws-region: ${{ env.AWS_REGION }}
