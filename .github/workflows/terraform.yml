@@ -26,7 +26,7 @@ jobs:
     steps:      
       - name: Print
         run: |
-          echo "Using AWS Account: ${{ env.ENVIRONMENT }}"          
+          echo "Using AWS Account: ${{ env.SECRET_NAME }}"          
 
       - name: Checkout code
         uses: actions/checkout@v4
