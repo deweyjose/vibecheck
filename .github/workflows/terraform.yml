@@ -24,6 +24,8 @@ jobs:
       exit_code: ${{ steps.plan.outputs.exit_code }}
 
     steps:
+      - run: echo "Using AWS Account: ${{ env.ACCOUNT_ID }}"
+
       - name: Checkout code
         uses: actions/checkout@v4
         
