@@ -24,9 +24,17 @@ jobs:
       exit_code: ${{ steps.plan.outputs.exit_code }}
 
     steps:      
+    - name: Set AWS Account ID based on branch
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_ENV
+        else
+          echo "AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_ENV
+        fi
+
       - name: Print
         run: |
-          echo "Using AWS Account: ${{ env.SECRET_NAME }}"          
+          echo "Using AWS Account: ${{ env.AWS_ACCOUNT_ID }}"          
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -34,7 +42,7 @@ jobs:
       - name: Configure AWS credentials from OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets[env.SECRET_NAME] }}:role/github-actions-terraform-dev
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-actions-terraform-dev
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Set up Terraform
