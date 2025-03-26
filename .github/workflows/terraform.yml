@@ -47,6 +47,7 @@ jobs:
         run: |
           set +e
           terraform plan -detailed-exitcode -out=tfplan
+          echo "$?"
           echo "exit_code=$?" >> $GITHUB_OUTPUT
         continue-on-error: true
       - name: Debug plan exit code
