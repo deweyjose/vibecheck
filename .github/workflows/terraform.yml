@@ -27,12 +27,12 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        working-directory: terraform/environments/dev
+        working-directory: infrastructure/environments/dev
         run: terraform init
 
       - name: Terraform Plan (detailed exit code)
         id: plan
-        working-directory: terraform/environments/dev
+        working-directory: infrastructure/environments/dev
         run: |
           set +e
           terraform plan -detailed-exitcode -out=tfplan
@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
-          path: terraform/environments/dev/tfplan
+          path: infrastructure/environments/dev/tfplan
 
   approve:
     name: Wait for Manual Approval
@@ -75,10 +75,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: tfplan
-          path: terraform/environments/dev
+          path: infrastructure/environments/dev
 
       - name: Terraform Apply (safely)
-        working-directory: terraform/environments/dev
+        working-directory: infrastructure/environments/dev
         run: |
           if [ -f tfplan ]; then
             terraform apply -auto-approve tfplan
