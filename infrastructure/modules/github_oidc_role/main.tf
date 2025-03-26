@@ -40,7 +40,54 @@ resource "aws_iam_role" "github_actions" {
 resource "aws_iam_role_policy" "github_policy" {
   name   = "github-actions-terraform-policy"
   role   = aws_iam_role.github_actions.id
-  policy = var.inline_policy
+  policy = jsonencode({
+    Version   = "2012-10-17",
+    Statement = [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "iam:GetOpenIDConnectProvider",         
+        ],
+        "Resource": "arn:aws:iam::${local.effective_account_id}:oidc-provider/token.actions.githubusercontent.com"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "iam:GetRole",
+          "iam:ListRolePolicies",
+          "iam:GetRolePolicy",
+          "iam:ListAttachedRolePolicies",
+          "s3:CreateBucket"
+        
+        ],
+        Resource = "arn:aws:iam::${local.effective_account_id}:role/github-actions-terraform"
+      },
+      {
+        Effect   = "Allow",
+        Action   = [
+          "s3:ListBucket",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ],
+        Resource = [
+          "arn:aws:s3:::tf-state-vibecheck-${var.env}",
+          "arn:aws:s3:::tf-state-vibecheck-${var.env}/*"
+        ]
+      },
+      {
+        Effect   = "Allow",
+        Action   = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem"
+        ],
+        Resource = "arn:aws:dynamodb:${var.aws_region}:${local.effective_account_id}:table/terraform-locks"
+
+      }
+      # Add additional permissions as needed.
+    ]
+  })
 }
 
 data "aws_caller_identity" "current" {

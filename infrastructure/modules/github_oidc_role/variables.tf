@@ -20,11 +20,6 @@ variable "sub_match" {
   default     = "*"
 }
 
-variable "inline_policy" {
-  description = "The IAM policy for the GitHub Actions role, provided as a JSON string."
-  type        = string
-}
-
 variable "account_id" {
   description = "The AWS account ID (optional — auto-discovered if not set)."
   type        = string
@@ -34,4 +29,9 @@ variable "account_id" {
 variable "env" {
   description = "The environment for the IAM role to be created."
   type        = string
+}
+
+variable "aws_region" {
+  description = "AWS region for deployment."
+  type        = string  
 }
