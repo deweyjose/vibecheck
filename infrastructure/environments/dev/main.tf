@@ -3,8 +3,8 @@ module "github_oidc_role" {
   github_org  = var.github_org
   github_repo = var.github_repo
   sub_match   = "*"  # or use a stricter pattern if desired
-  role_name   = "github-actions-terraform-dev"
-  
+  env         = var.env
+
   inline_policy = jsonencode({
     Version   = "2012-10-17",
     Statement = [
@@ -24,7 +24,7 @@ module "github_oidc_role" {
           "iam:ListAttachedRolePolicies",
         
         ],
-        Resource = "arn:aws:iam::${module.github_oidc_role.effective_account_id}:role/github-actions-terraform-dev"
+        Resource = "arn:aws:iam::${module.github_oidc_role.effective_account_id}:role/github-actions-terraform"
       },
       {
         Effect   = "Allow",
@@ -35,8 +35,8 @@ module "github_oidc_role" {
           "s3:DeleteObject"
         ],
         Resource = [
-          "arn:aws:s3:::tf-state-vibecheck-dev",
-          "arn:aws:s3:::tf-state-vibecheck-dev/*"
+          "arn:aws:s3:::tf-state-vibecheck-${var.env}",
+          "arn:aws:s3:::tf-state-vibecheck-${var.env}/*"
         ]
       },
       {
@@ -54,15 +54,18 @@ module "github_oidc_role" {
   })
 }
 
-resource "aws_s3_bucket" "tf_state_bucket" {
-  bucket = "tf-state-vibecheck-dev"
-  force_destroy = true
-}
+# resource "aws_s3_bucket" "tf_state_bucket" {
+#   bucket = "vibecheck-test-${var.env}"
+#   force_destroy = true
+#   tags = {
+#     env = var.env
+#   }
+# }
 
-resource "aws_s3_bucket_versioning" "tf_state_bucket_versioning" {
-  bucket = aws_s3_bucket.tf_state_bucket.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
+# resource "aws_s3_bucket_versioning" "tf_state_bucket_versioning" {
+#   bucket = aws_s3_bucket.tf_state_bucket.id
+#   versioning_configuration {
+#     status = "Enabled"
+#   }
+# }
 

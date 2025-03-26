@@ -15,3 +15,9 @@ variable "github_repo" {
   type        = string
   default     = "vibecheck"
 }
+
+variable "env" {
+  description = "The environment for the infrastructure to be created."
+  type        = string
+  default     = "dev"
+}

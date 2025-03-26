@@ -3,8 +3,8 @@ module "github_oidc_role" {
   github_org  = var.github_org
   github_repo = var.github_repo
   sub_match   = "*"  # adjust if you want a stricter ref pattern
-  role_name   = "github-actions-terraform-prod"
-  
+  env         = var.env
+
   inline_policy = jsonencode({
     Version   = "2012-10-17",
     Statement = [
@@ -24,7 +24,7 @@ module "github_oidc_role" {
           "iam:ListAttachedRolePolicies",
         
         ],
-        Resource = "arn:aws:iam::${module.github_oidc_role.effective_account_id}:role/github-actions-terraform-dev"
+        Resource = "arn:aws:iam::${module.github_oidc_role.effective_account_id}:role/github-actions-terraform"
       },
       {
         Effect   = "Allow",
@@ -35,8 +35,8 @@ module "github_oidc_role" {
           "s3:DeleteObject"
         ],
         Resource = [
-          "arn:aws:s3:::tf-state-vibecheck-prod",
-          "arn:aws:s3:::tf-state-vibecheck-prod/*"
+          "arn:aws:s3:::tf-state-vibecheck-${var.env}",
+          "arn:aws:s3:::tf-state-vibecheck-${var.env}/*"
         ]
       },
       {
