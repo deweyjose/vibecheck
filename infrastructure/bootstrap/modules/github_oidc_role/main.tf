@@ -69,6 +69,7 @@ resource "aws_iam_role_policy" "github_policy" {
         "Effect": "Allow",
         "Action": [
           "s3:CreateBucket",
+          "s3:DeleteBucket",
           "s3:HeadBucket",
           "s3:ListBucket",
           "s3:GetObject",
