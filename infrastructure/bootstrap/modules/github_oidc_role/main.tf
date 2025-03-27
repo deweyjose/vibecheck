@@ -67,7 +67,11 @@ resource "aws_iam_role_policy" "github_policy" {
       },
       {
         "Effect": "Allow",
-        "Action": "s3:CreateBucket",
+        "Action": [
+          "s3:CreateBucket",
+          "s3:GetBucketVersioning",
+          "s3:PutBucketVersioning"
+        ],
         "Resource": "*"
       }
     ]
