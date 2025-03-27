@@ -57,7 +57,8 @@ resource "aws_iam_role_policy" "github_policy" {
           "s3:GetObject",
           "s3:PutObject",
           "s3:DeleteObject",
-          "s3:HeadObject"
+          "s3:HeadObject",
+          "s3:PutObject"
         ],
         Resource = [
           "arn:aws:s3:::tf-state-vibecheck-${var.env}",
