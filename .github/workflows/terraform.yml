@@ -80,11 +80,10 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    needs: 
-      - plan
-      - ${{ github.ref != 'refs/heads/main' && 'approve' || '' }}
+    needs: [plan, approve]
+    # needs: plan
     runs-on: ubuntu-latest
-    if: needs.plan.outputs.exit_code == '2'
+    if: needs.plan.outputs.exit_code == '2' && (github.ref == 'refs/heads/main' || success() )
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
