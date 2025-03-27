@@ -66,22 +66,29 @@ resource "aws_iam_role_policy" "github_policy" {
         ]
       },
       {
-        "Effect": "Allow",
-        "Action": [
+        Effect   = "Allow",
+        Action   = [
           "s3:CreateBucket",
-          "s3:HeadBucket",
+          "s3:DeleteBucket",
           "s3:ListBucket",
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:DeleteObject",
-          "s3:GetBucketTagging",
-          "s3:PutBucketTagging",
-          "s3:GetBucketVersioning",
-          "s3:PutBucketVersioning",
+          "s3:PutBucketPolicy",
           "s3:GetBucketPolicy",
-          "s3:PutBucketPolicy"
+          "s3:PutBucketOwnershipControls"
         ],
-        "Resource": "*"
+        Resource = [
+          "arn:aws:s3:::*"
+        ]
+      },
+      {
+        Effect   = "Allow",
+        Action   = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject"
+        ],
+        Resource = [
+          "arn:aws:s3:::*/*"
+        ]
       }
     ]
   })
