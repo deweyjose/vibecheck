@@ -60,8 +60,8 @@ resource "aws_iam_role_policy" "github_policy" {
           "s3:HeadObject"
         ],
         Resource = [
-          "arn:aws:s3:::tf-state-vibecheck-${var.env}/application",
-          "arn:aws:s3:::tf-state-vibecheck-${var.env}/application/*"
+          "arn:aws:s3:::tf-state-vibecheck-${var.env}/",
+          "arn:aws:s3:::tf-state-vibecheck-${var.env}/*"
         ]
       },
       # Add additional permissions as needed.
