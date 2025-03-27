@@ -49,20 +49,7 @@ resource "aws_iam_role_policy" "github_policy" {
           "iam:GetOpenIDConnectProvider",         
         ],
         "Resource": "arn:aws:iam::${local.effective_account_id}:oidc-provider/token.actions.githubusercontent.com"
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "iam:GetRole",
-          "iam:ListRolePolicies",
-          "iam:GetRolePolicy",
-          "iam:ListAttachedRolePolicies",
-          "iam:PutRolePolicy",
-          "s3:CreateBucket"
-        
-        ],
-        Resource = "arn:aws:iam::${local.effective_account_id}:role/github-actions-terraform"
-      },
+      },      
       {
         Effect   = "Allow",
         Action   = [
@@ -72,20 +59,10 @@ resource "aws_iam_role_policy" "github_policy" {
           "s3:DeleteObject"
         ],
         Resource = [
-          "arn:aws:s3:::tf-state-vibecheck-${var.env}",
-          "arn:aws:s3:::tf-state-vibecheck-${var.env}/*"
+          "arn:aws:s3:::tf-state-vibecheck-${var.env}/application",
+          "arn:aws:s3:::tf-state-vibecheck-${var.env}/application/*"
         ]
       },
-      {
-        Effect   = "Allow",
-        Action   = [
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:DeleteItem"
-        ],
-        Resource = "arn:aws:dynamodb:${var.aws_region}:${local.effective_account_id}:table/terraform-locks"
-
-      }
       # Add additional permissions as needed.
     ]
   })
