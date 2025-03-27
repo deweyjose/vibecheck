@@ -73,7 +73,8 @@ resource "aws_iam_role_policy" "github_policy" {
           "s3:ListBucket",
           "s3:PutBucketPolicy",
           "s3:GetBucketPolicy",
-          "s3:PutBucketOwnershipControls"
+          "s3:PutBucketOwnershipControls",
+          "s3:GetBucketTagging"
         ],
         Resource = [
           "arn:aws:s3:::*"
