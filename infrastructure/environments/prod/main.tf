@@ -6,12 +6,3 @@ resource "aws_s3_bucket" "example" {
     env = var.env
   }
 }
-
-resource "aws_s3_bucket" "example2" {
-  bucket = "vibecheck-test2-${var.env}"
-  force_destroy = true
-
-  tags = {    
-    env = var.env
-  }
-}
