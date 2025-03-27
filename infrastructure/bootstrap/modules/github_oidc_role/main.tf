@@ -68,29 +68,50 @@ resource "aws_iam_role_policy" "github_policy" {
       {
         "Effect": "Allow",
         "Action": [
+          // Bucket-level read
+          "s3:GetBucketAcl",
+          "s3:GetBucketCORS",
+          "s3:GetBucketLocation",
+          "s3:GetBucketLogging",
+          "s3:GetBucketNotification",
+          "s3:GetBucketPolicy",
+          "s3:GetBucketReplication",
+          "s3:GetBucketRequestPayment",
+          "s3:GetBucketTagging",
+          "s3:GetBucketVersioning",
+          "s3:GetBucketWebsite",
+
+          // Bucket-level write
+          "s3:PutBucketAcl",
+          "s3:PutBucketCORS",
+          "s3:PutBucketLogging",
+          "s3:PutBucketNotification",
+          "s3:PutBucketPolicy",
+          "s3:PutBucketReplication",
+          "s3:PutBucketRequestPayment",
+          "s3:PutBucketTagging",
+          "s3:PutBucketVersioning",
+          "s3:PutBucketWebsite",
+
+          // General bucket operations
+          "s3:CreateBucket",
+          "s3:DeleteBucket",
+          "s3:ListBucket",
+          "s3:HeadBucket",
+
+          // Object-level access
           "s3:GetObject",
           "s3:PutObject",
           "s3:DeleteObject",
           "s3:ListMultipartUploadParts",
-          "s3:CreateBucket",
-          "s3:DeleteBucket",
-          "s3:GetBucketAcl",
-          "s3:GetBucketCors",
-          "s3:GetBucketLocation",
-          "s3:GetBucketPolicy",
-          "s3:GetBucketTagging",
-          "s3:GetBucketVersioning",
-          "s3:GetLifecycleConfiguration",
-          "s3:PutBucketAcl",
-          "s3:PutBucketCors",
-          "s3:PutBucketPolicy",
-          "s3:PutBucketTagging",
-          "s3:PutBucketVersioning",
-          "s3:PutLifecycleConfiguration",
-          "s3:ListBucket",
-          "s3:GetBucketWebsite"
+
+          // Required for multipart upload completion
+          "s3:AbortMultipartUpload"
         ],
-        "Resource": "arn:aws:s3:::*"
+        "Resource": [
+          "arn:aws:s3:::*",
+          "arn:aws:s3:::*/*"
+        ]
       }      
     ]
   })
