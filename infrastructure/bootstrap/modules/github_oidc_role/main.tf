@@ -75,7 +75,11 @@ resource "aws_iam_role_policy" "github_policy" {
           "s3:PutObject",
           "s3:DeleteObject",
           "s3:GetBucketTagging",
-          "s3:PutBucketTagging"
+          "s3:PutBucketTagging",
+          "s3:GetBucketVersioning",
+          "s3:PutBucketVersioning",
+          "s3:GetBucketPolicy",
+          "s3:PutBucketPolicy"
         ],
         "Resource": "*"
       }
