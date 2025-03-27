@@ -59,28 +59,29 @@ jobs:
           name: tfplan
           path: infrastructure/environments/${{ env.ENVIRONMENT }}/tfplan
 
-  approve:
-    name: Wait for Manual Approval
-    permissions:
-      issues: write
-    needs: plan
-    runs-on: ubuntu-latest
-    if: github.ref != 'refs/heads/main' && needs.plan.outputs.exit_code == '2'
-    steps:
-      - uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ secrets.GITHUB_TOKEN }}
-          approvers: deweyjose
-          issue-title: "Terraform Apply Approval Required"
-          issue-body: "Review and approve to apply Terraform changes to dev."          
-          exclude-workflow-initiator-as-approver: false
+  # approve:
+  #   name: Wait for Manual Approval
+  #   permissions:
+  #     issues: write
+  #   needs: plan
+  #   runs-on: ubuntu-latest
+  #   if: github.ref != 'refs/heads/main' && needs.plan.outputs.exit_code == '2'
+  #   steps:
+  #     - uses: trstringer/manual-approval@v1
+  #       with:
+  #         secret: ${{ secrets.GITHUB_TOKEN }}
+  #         approvers: deweyjose
+  #         issue-title: "Terraform Apply Approval Required"
+  #         issue-body: "Review and approve to apply Terraform changes to dev."          
+  #         exclude-workflow-initiator-as-approver: false
 
   apply:
     name: Terraform Apply
     permissions:
       id-token: write
       contents: read
-    needs: [plan, approve]
+    # needs: [plan, approve]
+    needs: plan
     runs-on: ubuntu-latest
     if: needs.plan.outputs.exit_code == '2'
     steps:
