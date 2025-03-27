@@ -3,13 +3,13 @@ resource "aws_iam_openid_connect_provider" "github" {
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
 
-  tags = {
-    Name = var.oidc_provider_name
+  tags = {    
+    env = var.env
   }
 }
 
 resource "aws_iam_role" "github_actions" {
-  name = var.role_name
+  name = "github-actions-terraform"
 
   assume_role_policy = jsonencode({
     Version   = "2012-10-17",
@@ -33,14 +33,44 @@ resource "aws_iam_role" "github_actions" {
   })
 
   tags = {
-    Name = var.role_name
+    env = var.env
   }
 }
 
 resource "aws_iam_role_policy" "github_policy" {
-  name   = "${var.role_name}-policy"
+  name   = "github-actions-terraform-policy"
   role   = aws_iam_role.github_actions.id
-  policy = var.inline_policy
+  policy = jsonencode({
+    Version   = "2012-10-17",
+    Statement = [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "iam:GetOpenIDConnectProvider",         
+        ],
+        "Resource": "arn:aws:iam::${local.effective_account_id}:oidc-provider/token.actions.githubusercontent.com"
+      },      
+      {
+        Effect   = "Allow",
+        Action   = [
+          "s3:ListBucket",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:HeadObject"
+        ],
+        Resource = [
+          "arn:aws:s3:::tf-state-vibecheck-${var.env}",
+          "arn:aws:s3:::tf-state-vibecheck-${var.env}/*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": "s3:CreateBucket",
+        "Resource": "*"
+      }
+    ]
+  })
 }
 
 data "aws_caller_identity" "current" {

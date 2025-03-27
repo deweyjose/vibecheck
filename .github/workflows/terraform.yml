@@ -2,15 +2,15 @@ name: Terraform Plan & Apply
 
 on:
   push:
-    branches:
-      - dev
-      - main
+    branches:    
+      - '**'
   workflow_dispatch:
 
 env:
   AWS_REGION: us-east-1
   TF_IN_AUTOMATION: true
   TF_INPUT: false  
+  ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
   SECRET_NAME: ${{ github.ref == 'refs/heads/main' && 'AWS_ACCOUNT_ID_PROD' || 'AWS_ACCOUNT_ID_DEV' }}
 
 jobs:
@@ -24,14 +24,6 @@ jobs:
       exit_code: ${{ steps.plan.outputs.exit_code }}
 
     steps:      
-      - name: Set AWS_ACCOUNT_ID
-        id: set-account
-        run: |
-          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-            echo "account_id=${{ secrets.AWS_ACCOUNT_ID_PROD }}" >> $GITHUB_OUTPUT
-          else
-            echo "account_id=${{ secrets.AWS_ACCOUNT_ID_DEV }}" >> $GITHUB_OUTPUT
-          fi
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,34 +31,38 @@ jobs:
       - name: Configure AWS credentials from OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::564107671739:role/github-actions-terraform-dev
+          role-to-assume: arn:aws:iam::${{ secrets[env.SECRET_NAME] }}:role/github-actions-terraform
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false 
 
       - name: Terraform Init
-        working-directory: infrastructure/environments/dev
+        working-directory: infrastructure/environments/${{ env.ENVIRONMENT }}
         run: terraform init
 
       - name: Terraform Plan (detailed exit code)
         id: plan
-        working-directory: infrastructure/environments/dev
+        working-directory: infrastructure/environments/${{ env.ENVIRONMENT }}
         run: |
           set +e
-          terraform plan -detailed-exitcode -out=tfplan
+          terraform plan -detailed-exitcode -out=tfplan         
           echo "exit_code=$?" >> $GITHUB_OUTPUT
         continue-on-error: true
-
+        
       - name: Upload Plan
         if: steps.plan.outputs.exit_code == '2'
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
-          path: infrastructure/environments/dev/tfplan
+          path: infrastructure/environments/${{ env.ENVIRONMENT }}/tfplan
 
   approve:
     name: Wait for Manual Approval
+    permissions:
+      issues: write
     needs: plan
     runs-on: ubuntu-latest
     if: github.ref != 'refs/heads/main' && needs.plan.outputs.exit_code == '2'
@@ -74,9 +70,10 @@ jobs:
       - uses: trstringer/manual-approval@v1
         with:
           secret: ${{ secrets.GITHUB_TOKEN }}
-          approvers: your-github-username
+          approvers: deweyjose
           issue-title: "Terraform Apply Approval Required"
-          issue-body: "Review and approve to apply Terraform changes to dev."
+          issue-body: "Review and approve to apply Terraform changes to dev."          
+          exclude-workflow-initiator-as-approver: false
 
   apply:
     name: Terraform Apply
@@ -84,6 +81,7 @@ jobs:
       id-token: write
       contents: read
     needs: [plan, approve]
+    # needs: plan
     runs-on: ubuntu-latest
     if: needs.plan.outputs.exit_code == '2'
     steps:
@@ -93,20 +91,26 @@ jobs:
       - name: Configure AWS credentials from OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets[env.SECRET_NAME] }}:role/github-actions-terraform-dev
+          role-to-assume: arn:aws:iam::${{ secrets[env.SECRET_NAME] }}:role/github-actions-terraform
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false 
+
+      - name: Terraform Init
+        working-directory: infrastructure/environments/${{ env.ENVIRONMENT }}
+        run: terraform init
 
       - name: Download Plan
         uses: actions/download-artifact@v4
         with:
           name: tfplan
-          path: infrastructure/environments/dev
+          path: infrastructure/environments/${{ env.ENVIRONMENT }}
 
       - name: Terraform Apply (safely)
-        working-directory: infrastructure/environments/dev
+        working-directory: infrastructure/environments/${{ env.ENVIRONMENT }}
         run: |
           if [ -f tfplan ]; then
             terraform apply -auto-approve tfplan
