@@ -64,7 +64,11 @@ resource "aws_iam_role_policy" "github_policy" {
           "arn:aws:s3:::tf-state-vibecheck-${var.env}/*"
         ]
       },
-      # Add additional permissions as needed.
+      {
+        "Effect": "Allow",
+        "Action": "s3:CreateBucket",
+        "Resource": "*"
+      }
     ]
   })
 }
