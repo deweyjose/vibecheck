@@ -10,6 +10,7 @@ env:
   AWS_REGION: us-east-1
   TF_IN_AUTOMATION: true
   TF_INPUT: false  
+  TF_LOG: DEBUG
   ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
   SECRET_NAME: ${{ github.ref == 'refs/heads/main' && 'AWS_ACCOUNT_ID_PROD' || 'AWS_ACCOUNT_ID_DEV' }}
 
