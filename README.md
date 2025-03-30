@@ -124,6 +124,25 @@ A modern, feature-rich text editor built with React, TypeScript, and Tiptap.
 
 ## Development
 
+### Prerequisites
+
+- Node.js 18 or newer
+- pnpm 8 or newer
+- Docker Desktop
+- AWS CLI (for infrastructure management)
+- Terraform v1.2.0 or newer (for infrastructure management)
+
+### Infrastructure Setup
+
+The project uses Terraform to manage AWS infrastructure. See [infrastructure/README.md](infrastructure/README.md) for detailed setup instructions, including:
+- One-time bootstrap process for GitHub Actions
+- Environment-specific configurations
+- Infrastructure deployment workflow
+- State management
+- Security considerations
+
+### Local Development
+
 ### Setup
 ```bash
 # Install dependencies
