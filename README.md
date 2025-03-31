@@ -248,7 +248,7 @@ Infra
 - Then ... ChatGPT 4o - for me way easier to setup terraform.
 - README for terraform bootstrap was really annoying… version control state files…
 - After careful inspection, CICD wasn't a great experience after we started to get into it. The dir structure wasn't idiomatic and google/chatgpt was more useful.
-
+```
 
 ### Project Structure
 ```
