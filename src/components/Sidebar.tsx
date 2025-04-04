@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   ChevronDownIcon,
   DocumentIcon,
@@ -8,6 +8,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { useWiki } from '../contexts/WikiContext'
 import ContextMenu from './ContextMenu'
+import { useDrag, useDrop } from 'react-dnd'
+import type { DropTargetMonitor } from 'react-dnd'
+import './DragStyles.css'
 
 // Define our types
 interface Page {
@@ -16,6 +19,19 @@ interface Page {
   type: 'folder' | 'document'
   children?: Page[]
   isExpanded?: boolean
+}
+
+// Define drag item types
+const ItemTypes = {
+  PAGE: 'page',
+}
+
+// Define the drag item structure
+interface DragItem {
+  id: string
+  type: string
+  pageType: 'folder' | 'document'
+  depth: number
 }
 
 function SortablePage({ 
@@ -34,11 +50,14 @@ function SortablePage({
     renamePage,
     duplicatePage,
     exportPage,
-    copyPageLink
+    copyPageLink,
+    movePage
   } = useWiki()
   
   const [isRenaming, setIsRenaming] = useState(false)
   const [newTitle, setNewTitle] = useState(page.title)
+  const ref = useRef<HTMLDivElement>(null)
+  const [dropIndicator, setDropIndicator] = useState<'top' | 'bottom' | 'inside' | null>(null)
 
   const handleFolderClick = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -57,6 +76,94 @@ function SortablePage({
     }
   }
 
+  // Set up drag source
+  const [{ isDragging }, drag] = useDrag<DragItem, unknown, { isDragging: boolean }>({
+    type: ItemTypes.PAGE,
+    item: { 
+      id: page.id, 
+      type: ItemTypes.PAGE,
+      pageType: page.type,
+      depth 
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  })
+
+  // Set up drop target
+  const [{ isOver, canDrop }, drop] = useDrop<DragItem, unknown, { isOver: boolean; canDrop: boolean }>({
+    accept: ItemTypes.PAGE,
+    collect: (monitor) => ({
+      isOver: monitor.isOver({ shallow: true }),
+      canDrop: monitor.canDrop(),
+    }),
+    hover: (item: DragItem, monitor) => {
+      if (!ref.current) return
+      
+      // Don't allow dropping on itself
+      if (item.id === page.id) {
+        setDropIndicator(null)
+        return
+      }
+
+      // Calculate vertical position to determine drop position
+      const hoverBoundingRect = ref.current.getBoundingClientRect()
+      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
+      const clientOffset = monitor.getClientOffset()
+      
+      if (!clientOffset) return
+      
+      const hoverClientY = clientOffset.y - hoverBoundingRect.top
+      
+      // Determine drop position based on hover location
+      if (hoverClientY < hoverMiddleY / 2) {
+        setDropIndicator('top')
+      } else if (hoverClientY > hoverMiddleY * 1.5) {
+        setDropIndicator('bottom')
+      } else if (page.type === 'folder') {
+        setDropIndicator('inside')
+      } else {
+        // For documents, just use top or bottom
+        setDropIndicator(hoverClientY < hoverMiddleY ? 'top' : 'bottom')
+      }
+    },
+    drop: (item: DragItem, monitor) => {
+      if (!ref.current) return
+      
+      if (item.id === page.id) return
+      
+      // Prevent dropping a parent into its own child
+      if (item.pageType === 'folder') {
+        // Logic for preventing folders from being dropped into their descendants
+        // is handled in the movePage function
+      }
+      
+      let position: 'before' | 'after' | 'inside' = 'inside'
+      
+      if (dropIndicator === 'top') {
+        position = 'before'
+      } else if (dropIndicator === 'bottom') {
+        position = 'after'
+      }
+      
+      // If dropping on a document with 'inside' position, change to 'after'
+      if (position === 'inside' && page.type === 'document') {
+        position = 'after'
+      }
+      
+      movePage(item.id, page.id, position)
+      setDropIndicator(null)
+    },
+  })
+  
+  // Clear indicator when not being dragged over
+  if (!isOver && dropIndicator !== null) {
+    setDropIndicator(null)
+  }
+  
+  // Connect both drag and drop refs
+  drag(drop(ref))
+
   return (
     <ContextMenu
       onNewDocument={() => addPage('document', page.id)}
@@ -69,11 +176,20 @@ function SortablePage({
       isFolder={page.type === 'folder'}
     >
       <div className="relative">
-        <div className={`
-          flex items-center gap-2 ${getPaddingClass(depth)} pr-3 py-1.5 rounded-md relative
-          ${activePage === page.id ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'}
-          ${depth > 0 ? 'before:absolute before:left-[11px] before:top-0 before:bottom-0 before:w-px before:bg-gray-200' : ''}
-        `}>
+        {dropIndicator === 'top' && (
+          <div className="drop-target-indicator-top" />
+        )}
+        
+        <div 
+          ref={ref}
+          className={`
+            flex items-center gap-2 ${getPaddingClass(depth)} pr-3 py-1.5 rounded-md relative drag-item
+            ${activePage === page.id ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-100'}
+            ${depth > 0 ? 'before:absolute before:left-[11px] before:top-0 before:bottom-0 before:w-px before:bg-gray-200' : ''}
+            ${isOver && dropIndicator === 'inside' ? 'drop-target-inside' : ''}
+            ${isDragging ? 'dragging' : ''}
+          `}
+        >
           {page.type === 'folder' ? (
             <button
               onClick={handleFolderClick}
@@ -118,6 +234,10 @@ function SortablePage({
             </button>
           )}
         </div>
+        
+        {dropIndicator === 'bottom' && (
+          <div className="drop-target-indicator-bottom" />
+        )}
 
         {page.type === 'folder' && page.isExpanded && page.children && (
           <div className="mt-1">
@@ -138,9 +258,38 @@ function SortablePage({
 function Sidebar() {
   const { pages, addPage } = useWiki()
   const [showNewMenu, setShowNewMenu] = useState(false)
+  const rootDropRef = useRef<HTMLDivElement>(null)
+  const [isOverRoot, setIsOverRoot] = useState(false)
+  
+  // Set up root level drop target
+  const [, drop] = useDrop<DragItem, unknown, { isOver: boolean }>({
+    accept: ItemTypes.PAGE,
+    collect: (monitor) => ({
+      isOver: monitor.isOver({ shallow: true }),
+    }),
+    hover: (item: DragItem, monitor) => {
+      if (monitor.isOver({ shallow: true })) {
+        setIsOverRoot(true)
+      }
+    },
+    drop: (item: DragItem, monitor) => {
+      // Only handle if dropped directly on the root, not on a child
+      if (monitor.didDrop()) {
+        return
+      }
+      
+      const { id } = item
+      // Add the page to the root level
+      // This is handled by removing it from its current location and not specifying a parent
+      useWiki().movePage(id, '', 'inside')
+      setIsOverRoot(false)
+    },
+  })
+  
+  drop(rootDropRef)
 
   return (
-    <div className="p-4">
+    <div className="p-4" ref={rootDropRef}>
       <div className="flex items-center justify-between mb-6 relative">
         <h1 className="text-xl font-semibold text-gray-800">Vibecheck</h1>
         
@@ -181,7 +330,7 @@ function Sidebar() {
         </div>
       </div>
       
-      <nav className="space-y-1">
+      <nav className={`space-y-1 root-drop-target ${isOverRoot ? 'active' : ''}`}>
         {pages.map(page => (
           <SortablePage
             key={page.id}

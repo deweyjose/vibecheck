@@ -94,7 +94,7 @@ A modern, feature-rich text editor built with React, TypeScript, and Tiptap.
 - ✅ Basic folder structure
 - ✅ Folder/document icons
 - ✅ Nested document indentation
-- 🔜 Drag-and-drop organization
+- ✅ Drag-and-drop organization
 - 🔜 Context menu enhancements
 - 🔜 Folder-aware search
 - 🐛 Context menu positioning in sidebar
@@ -150,7 +150,6 @@ A modern, feature-rich text editor built with React, TypeScript, and Tiptap.
    - Line number implementation
 
 3. Implement document organization features:
-   - Drag-and-drop
    - Enhanced context menus
    - Search improvements
 
@@ -271,130 +270,9 @@ src/
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## Data Persistence Architecture
-
-### Overview
-Our application follows an offline-first architecture, ensuring that users can work seamlessly regardless of their network connection. The system is designed to:
-- Work completely offline by default
-- Sync automatically when online
-- Handle conflicts gracefully
-- Provide immediate feedback through optimistic updates
-
-### Technical Stack
-1. **Local Storage (IndexedDB)**
-   - Primary data store for all application data
-   - Handles large document content and binary data
-   - Provides fast, indexed access to documents
-   - Supports complex querying capabilities
-
-2. **State Management**
-   - Uses optimistic updates for immediate UI feedback
-   - Maintains a sync queue for offline changes
-   - Tracks document versions for conflict resolution
-   - Implements event-based real-time updates
-
-3. **Sync Strategy**
-   - Background sync when online
-   - Queue-based synchronization of changes
-   - Version-based conflict detection
-   - Merge resolution with user intervention when needed
-   - Periodic full sync for consistency
-
-### Data Flow
-1. **Write Operations**
-   - Save immediately to IndexedDB
-   - Update UI optimistically
-   - Queue change for sync
-   - Attempt sync if online
-   - Handle conflicts if detected
-
-2. **Read Operations**
-   - Read from IndexedDB first
-   - Update from server if online
-   - Cache server response
-   - Update UI if newer data found
-
-3. **Conflict Resolution**
-   - Track document versions
-   - Detect conflicts during sync
-   - Auto-merge non-conflicting changes
-   - Present diff UI for manual resolution
-   - Maintain audit trail of changes
-
-### Implementation Details
-1. **Document Structure**
-   ```typescript
-   interface Document {
-     id: string;           // UUID v4
-     content: string;      // Document content
-     version: number;      // Incremental version
-     lastModified: number; // Timestamp
-     syncStatus: 'synced' | 'pending' | 'conflict';
-     localChanges?: DocumentDiff[]; // Pending changes
-   }
-   ```
-
-2. **Sync Queue**
-   ```typescript
-   interface SyncOperation {
-     id: string;          // Operation ID
-     documentId: string;  // Target document
-     type: 'create' | 'update' | 'delete';
-     changes: DocumentDiff[];
-     timestamp: number;
-     retryCount: number;
-   }
-   ```
-
-3. **Conflict Resolution**
-   ```typescript
-   interface DocumentDiff {
-     type: 'insert' | 'delete' | 'replace';
-     position: number;
-     content?: string;
-     length?: number;
-   }
-   ```
-
-### Error Handling
-1. **Network Errors**
-   - Retry with exponential backoff
-   - Queue operations for later
-   - Notify user of sync status
-
-2. **Conflict Errors**
-   - Present diff UI to user
-   - Allow manual merge
-   - Option to force push or pull
-
-3. **Storage Errors**
-   - Implement storage quotas
-   - Clean up old versions
-   - Compress when needed
-
-### Performance Considerations
-1. **Indexing**
-   - Index frequently queried fields
-   - Use compound indexes for complex queries
-   - Maintain search indices locally
-
-2. **Caching**
-   - Cache rendered content
-   - Implement LRU cache for documents
-   - Prefetch likely-to-be-needed data
-
-3. **Bandwidth**
-   - Compress payloads
-   - Delta updates only
-   - Batch sync operations
-
-### Security
-1. **Data Protection**
-   - Encrypt sensitive data at rest
-   - Sanitize data before storage
-   - Implement access controls
-
-2. **Sync Security**
-   - Authenticate all sync operations
-   - Validate data integrity
-   - Rate limit sync requests
+### Pull Request Guidelines
+- Ensure your code follows the project's style guidelines
+- Update documentation as needed
+- Include tests for new features
+- Reference any related issues in your PR description
+- Keep PRs focused on a single concern

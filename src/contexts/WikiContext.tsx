@@ -24,6 +24,11 @@ interface WikiContextType {
   duplicatePage: (id: string) => void;
   exportPage: (id: string) => void;
   copyPageLink: (id: string) => void;
+  movePage: (
+    sourceId: string,
+    targetId: string,
+    position?: "before" | "after" | "inside"
+  ) => void;
   lastSaved: Date | null;
   saveStatus: "saved" | "saving" | "error" | "unsaved";
   forceSave: () => Promise<void>;
@@ -309,6 +314,162 @@ export function WikiProvider({ children }: { children: ReactNode }) {
       });
   };
 
+  const movePage = (
+    sourceId: string,
+    targetId: string,
+    position: "before" | "after" | "inside" = "inside"
+  ) => {
+    // Don't move if source and target are the same
+    if (sourceId === targetId) return;
+
+    // Find source page and its parent
+    let sourcePage: Page | null = null;
+    let sourceParentId: string | null = null;
+
+    const findSourceAndParent = (
+      pages: Page[],
+      parentId: string | null = null
+    ): boolean => {
+      for (const page of pages) {
+        if (page.id === sourceId) {
+          sourcePage = page;
+          sourceParentId = parentId;
+          return true;
+        }
+        if (page.children && findSourceAndParent(page.children, page.id)) {
+          return true;
+        }
+      }
+      return false;
+    };
+    findSourceAndParent(pages);
+
+    if (!sourcePage) return;
+
+    // If the targetId is empty, we're moving to the root level
+    if (!targetId) {
+      // Need to type assert sourcePage correctly to avoid TypeScript error
+      const typedSourcePage = sourcePage as Page;
+      const itemType =
+        typedSourcePage.type === "folder" ? "Folder" : "Document";
+
+      // Remove from current location and add to root level
+      setPages((prevPages) => {
+        // First, create a copy of the source page
+        const sourcePageCopy = { ...typedSourcePage };
+
+        // Then, filter out the source page from its current location
+        const pagesWithoutSource = prevPages.filter((page) => {
+          if (page.id === sourceId) return false;
+          if (page.children) {
+            page.children = page.children.filter(
+              (child) => child.id !== sourceId
+            );
+          }
+          return true;
+        });
+
+        // Add the source page to the root level
+        return [...pagesWithoutSource, sourcePageCopy];
+      });
+
+      toast.success(`${itemType} moved to root level`);
+      return;
+    }
+
+    // Check if target is a child of source (to prevent invalid moves)
+    const isTargetChildOfSource = (
+      sourceId: string,
+      targetId: string
+    ): boolean => {
+      const checkChildren = (pageId: string, targetId: string): boolean => {
+        const page = findPage(pageId, pages);
+        if (!page || !page.children) return false;
+
+        return page.children.some(
+          (child) => child.id === targetId || checkChildren(child.id, targetId)
+        );
+      };
+
+      return checkChildren(sourceId, targetId);
+    };
+
+    if (isTargetChildOfSource(sourceId, targetId)) {
+      toast.error("Cannot move a folder into its own descendant");
+      return;
+    }
+
+    // Remove the source page from its current location
+    setPages((prevPages) => {
+      const removeSource = (pages: Page[]): Page[] => {
+        if (!pages) return [];
+        return pages.filter((page) => {
+          if (page.id === sourceId) return false;
+          if (page.children) {
+            page.children = removeSource(page.children);
+          }
+          return true;
+        });
+      };
+      return removeSource(prevPages);
+    });
+
+    // Wait for state update to complete before inserting
+    setTimeout(() => {
+      // Insert the source page at the new location
+      setPages((prevPages) => {
+        const insertAtTarget = (pages: Page[]): Page[] => {
+          return pages
+            .map((page) => {
+              // Handle the three possible positions
+              if (page.id === targetId) {
+                if (position === "inside") {
+                  // If target is a folder, insert inside
+                  if (page.type === "folder") {
+                    return {
+                      ...page,
+                      children: [...(page.children || []), sourcePage!],
+                      isExpanded: true, // Auto-expand the folder
+                    };
+                  } else {
+                    // If target is a document, insert after
+                    return [page, sourcePage!];
+                  }
+                } else if (position === "before") {
+                  return [sourcePage!, page];
+                } else if (position === "after") {
+                  return [page, sourcePage!];
+                }
+              }
+
+              // Recursively check children
+              if (page.children) {
+                const newChildren = insertAtTarget(page.children);
+                return {
+                  ...page,
+                  children: Array.isArray(newChildren[0])
+                    ? newChildren.flat()
+                    : newChildren,
+                };
+              }
+
+              return page;
+            })
+            .flat();
+        };
+
+        return insertAtTarget(prevPages);
+      });
+
+      // Show success message
+      toast.success(
+        `${
+          sourcePage?.type === "folder" ? "Folder" : "Document"
+        } moved successfully`
+      );
+    }, 0);
+  };
+
   return (
     <WikiContext.Provider
       value={{
@@ -325,6 +486,7 @@ export function WikiProvider({ children }: { children: ReactNode }) {
         duplicatePage,
         exportPage,
         copyPageLink,
+        movePage,
         lastSaved,
         saveStatus,
         forceSave,

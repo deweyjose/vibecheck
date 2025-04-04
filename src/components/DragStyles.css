@@ -1,0 +1,45 @@
+/* Drag and Drop Styles */
+.drag-item {
+  cursor: move;
+  transition: opacity 0.2s;
+}
+
+.drag-item.dragging {
+  opacity: 0.5;
+}
+
+.drop-target-indicator-top,
+.drop-target-indicator-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #3b82f6;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.drop-target-indicator-top {
+  top: 0;
+}
+
+.drop-target-indicator-bottom {
+  bottom: 0;
+}
+
+.drop-target-inside {
+  background-color: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  border-radius: 0.375rem;
+}
+
+.root-drop-target {
+  min-height: 100px;
+  transition: background-color 0.2s, padding 0.2s;
+}
+
+.root-drop-target.active {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+} 
