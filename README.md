@@ -226,28 +226,44 @@ This project is optimized for development with [Cursor](https://cursor.sh), an A
 - Review AI-generated code before committing
 - Use the AI to help with documentation and comments
 
-### Dewey Notes for Mark
+### Dewey Notes on Cursor
 
 ```
-Thoughts on Cursor
-- debugging the code with images of the console or images of the browers is amazing
-- you can usually root cause issues by continuing to tell the model it's broken
-- it will find a solution for you - I had an issue with text editor callouts. It tried to use SVG data icons, kept failing. then it decided to use unicode/emoticons. We finally found the root case, something else related to bad class names. I told it to go back and unify the callout icons in the toolbar with the editor canvas… easy peasy.
-- when we struggled through a problem and got to a solution. I replied to the model ":)" and it celebrated with me.
+Frontend
+* Cursor picked all of the libraries, picked the react framework (Vite), component library, setup tailwind css etc.
+* At this point I have a reasonable working Richtext Editor, that I really didn't have much business building as fast as I did, I think a couple days cumulative time.
+    *  I know React and FE generally, so I could help Cursor when needed. I think it's a 10x multiplier on an engineer that already knows....
+* We ran into bugs and issues though - what was amazing: Debugging the code with images of the chrome developer console or images of the browser. 
+* You can usually root cause issues by continuing to tell the model it’s broken and not letting it off the hook. It was good about trying new ideas, not making the same mistakes over and over again.
+* it will find a solution for you - I had an issue with text editor callouts. It tried to use SVG data icons, but it kept failing. Then it decided to use unicode/emoticons. I just happened to notice later on that html class names looked weird (the root cause) when looking at something else. I told Cursor "hey, remember that issue with SVG icons? Take a second look around class names and unify the callout icons if you can"... It backed out our workaround and fixed the issue easily.
+* One other time we struggled through a problem and got to a solution. I replied to the model with a smiley face and a screen shot of the UI and it celebrated with me LOLOL.
+ 
+Context/Conversation with the Agent
+* We kept losing context about our todo list, so I had Cursor add it to the readme. It then learned to add/update the bug list or add new feature ideas automatically to it as we collaborated.
+* Using the README as a bug tracker/project tracker has been  boon.
+* Should use GitHub MCP for issues, and the rest of GitHub to be honest. This is on my todo list.
+    * https://cursor.directory/mcp/github
+    * https://github.com/modelcontextprotocol/servers/tree/main/src/github
+ 
+READMEs
 
-Context
-- we kept losing context about our todo list, so I had Cursor add it to the readme. it then learned to add/update the bug list or add new feature ideas automatically to it as we collaborated.
-- Using the README as a bug tracker/project tracker has been  boon. I think 
-- Should use GitHub MCP for issues, and the rest of GitHub to be honest. 
-    - https://cursor.directory/mcp/github
-    - https://github.com/modelcontextprotocol/servers/tree/main/src/github
+1. Phenomenal. I'll let the content speak for itself, let me know what you think.
+2. I call this out because like Benjamin - I believe in a strong useful concise README. Sounds like we don't have a lot of standardization, we an use GenAI to clean that up and standardize pretty easily.
+
+ 
+GitHub Actions
+
+1. I think Cursor did a great job here. I gave it a non trivial workflow that behaved differently in main vs feature branches that optimized for careful planning/approval in non main branches, and frictionless deploys to prod. I have two accounts, dev and prod.
+2. We also worked through the correct OIDC provider setup - the secure way to connect GithubActions with a role in your AWS account that can change infrastructure. 
+
+ 
+Infra (CD)
+* Initially I thought it did an awesome job with CICD… recommended some good practices with TF and account setup in AWS
+* But, ChatGPT 4o - for me was way easier to adhere to the idiomatic Terraform directory structure. Not sure what I did wrong, could have been prompting Cursor incorrectly.
+* README for terraform bootstrap was really annoying
+* After reflection, CD (terraform) wasn’t a great experience after we started to get into it. The dir structure wasn’t idiomatic and google/chatgpt was more useful. Google results make me feel better about this, seems common
 
 
-Infra
-- At first I thought... Did an awesome job with CICD… recommended some good practices with TF and account setup in AWS
-- Then ... ChatGPT 4o - for me way easier to setup terraform.
-- README for terraform bootstrap was really annoying… version control state files…
-- After careful inspection, CICD wasn't a great experience after we started to get into it. The dir structure wasn't idiomatic and google/chatgpt was more useful.
 ```
 
 ### Project Structure
